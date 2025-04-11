@@ -1,7 +1,7 @@
 export default function manifest() {
   return {
-    name: "CircleUP",
-    short_name: "CircleUP",
+    name: "Reelink",
+    short_name: "Reelink",
     description: "A real-time social media platform with PWA support",
     start_url: "/",
     display: "standalone",

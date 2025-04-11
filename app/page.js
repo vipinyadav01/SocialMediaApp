@@ -212,7 +212,7 @@ export default function Home() {
 
         <Card>
           <CardHeader>
-            <CardTitle>CircleUP Updates</CardTitle>
+            <CardTitle>Reelink Updates</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3 text-sm">
@@ -223,7 +223,7 @@ export default function Home() {
               <p>
                 <span className="font-medium">Coming Soon:</span> Live video streaming and improved messaging.
               </p>
-              <p className="text-xs text-gray-500 mt-4">© 2025 CircleUP. All rights reserved.</p>
+              <p className="text-xs text-gray-500 mt-4">© 2025 Reelink. All rights reserved.</p>
             </div>
           </CardContent>
         </Card>

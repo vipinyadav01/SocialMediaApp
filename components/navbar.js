@@ -95,7 +95,7 @@ export default function Navbar() {
                 <SheetContent side="left">
                   <div className="flex flex-col h-full">
                     <Link href="/" className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-8">
-                    CircleUP
+                    Reelink
                     </Link>
                     <div className="space-y-4">
                       <Link
@@ -151,7 +151,7 @@ export default function Navbar() {
             )}
 
             <Link href="/" className="text-xl font-bold text-blue-600 dark:text-blue-400">
-            CircleUP
+            Reelink
             </Link>
 
             {!isMobile && (

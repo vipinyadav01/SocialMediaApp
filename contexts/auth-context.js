@@ -83,7 +83,7 @@ export function AuthProvider({ children }) {
 
       toast({
         title: "Account created!",
-        description: "Welcome to CircleUP!",
+        description: "Welcome to Reelink!",
       })
 
       return user
@@ -160,7 +160,7 @@ export function AuthProvider({ children }) {
 
         toast({
           title: "Account created!",
-          description: "Welcome to CircleUP!",
+          description: "Welcome to Reelink!",
         })
       } else {
         // Update last login timestamp

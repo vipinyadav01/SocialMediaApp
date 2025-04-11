@@ -91,7 +91,7 @@ export default function UserSuggestions() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Join CircleUP</CardTitle>
+          <CardTitle>Join Reelink</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
