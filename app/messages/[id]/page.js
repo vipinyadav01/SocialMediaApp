@@ -114,7 +114,7 @@ export default function ChatPage({ params }) {
     }
 
     setupConversation()
-  }, [user, recipient])
+  }, [user, recipient, router])
 
   // Fetch messages
   useEffect(() => {
@@ -319,8 +319,7 @@ export default function ChatPage({ params }) {
                       key={message.id} 
                       className={`flex ${isSender ? "justify-end" : "justify-start"} ${!isFirstInCluster ? "mt-1" : "mt-4"}`}
                     >
-                      {/* Always show recipient avatar for incoming messages */}
-                      {!isSender && (
+                      {!isSender && isFirstInCluster && (
                         <Avatar className="h-8 w-8 mr-2 self-end mb-1">
                           <AvatarImage src={recipient?.avatar} alt={recipient?.name} />
                           <AvatarFallback className="bg-blue-200 text-blue-700 text-xs">
@@ -329,26 +328,27 @@ export default function ChatPage({ params }) {
                         </Avatar>
                       )}
                       
-                      <div className={`max-w-[75%]`}>
+                      <div className={`max-w-[75%] ${!isSender && !isFirstInCluster ? "ml-10" : ""}`}>
                         <div className={bubbleClass}>
                           <p className="whitespace-pre-wrap break-words">{message.text}</p>
                         </div>
                         
-                        <div className={`flex items-center text-xs mt-1 ${isSender ? "justify-end text-gray-500" : "justify-start text-gray-500"}`}>
-                          {message.createdAt
-                            ? formatDistanceToNow(message.createdAt.toDate(), { addSuffix: true })
-                            : "Sending..."}
-                          
-                          {isSender && (
-                            <span className={`flex items-center ${message.read ? "text-blue-500" : "text-gray-400"}`}>
-                              {getMessageStatus(message)}
-                            </span>
-                          )}
-                        </div>
+                        {isLastInCluster && (
+                          <div className={`flex items-center text-xs mt-1 ${isSender ? "justify-end text-gray-500" : "justify-start text-gray-500"}`}>
+                            {message.createdAt
+                              ? formatDistanceToNow(message.createdAt.toDate(), { addSuffix: true })
+                              : "Sending..."}
+                            
+                            {isSender && (
+                              <span className={`flex items-center ${message.read ? "text-blue-500" : "text-gray-400"}`}>
+                                {getMessageStatus(message)}
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
                       
-                      {/* Always show user avatar for outgoing messages */}
-                      {isSender && (
+                      {isSender && isFirstInCluster && (
                         <Avatar className="h-8 w-8 ml-2 self-end mb-1">
                           <AvatarImage src={user?.photoURL} alt={user?.displayName} />
                           <AvatarFallback className="bg-blue-600 text-white text-xs">
