@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
 import {
@@ -15,6 +15,7 @@ import {
   getDoc,
   updateDoc,
   getDocs,
+  limit,
 } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -75,6 +76,7 @@ export default function ChatPage({ params }) {
         const conversationsQuery = query(
           collection(db, "conversations"),
           where("participants", "array-contains", user.uid),
+          limit(1)
         )
 
         const conversationsSnapshot = await getDocs(conversationsQuery)
@@ -119,6 +121,7 @@ export default function ChatPage({ params }) {
       collection(db, "messages"),
       where("conversationId", "==", conversationId),
       orderBy("createdAt", "asc"),
+      limit(50) // Limit the number of messages initially fetched
     )
 
     const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
@@ -147,7 +150,7 @@ export default function ChatPage({ params }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
-  const sendMessage = async (e) => {
+  const sendMessage = useCallback(async (e) => {
     e.preventDefault()
 
     if (!user || !recipient || !conversationId || !newMessage.trim()) return
@@ -173,7 +176,7 @@ export default function ChatPage({ params }) {
     } catch (error) {
       console.error("Error sending message:", error)
     }
-  }
+  }, [user, recipient, conversationId, newMessage])
 
   if (authLoading || loading) {
     return (

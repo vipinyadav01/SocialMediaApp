@@ -1,15 +1,16 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
-import { collection, query, where, orderBy, onSnapshot, getDocs, getDoc } from "firebase/firestore"
+import { collection, query, where, orderBy, onSnapshot, getDocs, getDoc, limit } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
+import { debounce } from "lodash"
 
 export default function MessagesPage() {
   const { user, loading: authLoading } = useAuth()
@@ -35,6 +36,7 @@ export default function MessagesPage() {
       collection(db, "conversations"),
       where("participants", "array-contains", user.uid),
       orderBy("lastMessageAt", "desc"),
+      limit(20) // Limit the number of conversations initially fetched
     )
 
     const unsubscribe = onSnapshot(conversationsQuery, async (snapshot) => {
@@ -67,34 +69,42 @@ export default function MessagesPage() {
     return () => unsubscribe()
   }, [user])
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim() || !user) return
+  const handleSearch = useCallback(
+    debounce(async () => {
+      if (!searchQuery.trim() || !user) return
 
-    setIsSearching(true)
+      setIsSearching(true)
 
-    try {
-      const usersQuery = query(
-        collection(db, "users"),
-        where("name", ">=", searchQuery),
-        where("name", "<=", searchQuery + "\uf8ff"),
-        orderBy("name"),
-      )
+      try {
+        const usersQuery = query(
+          collection(db, "users"),
+          where("name", ">=", searchQuery),
+          where("name", "<=", searchQuery + "\uf8ff"),
+          orderBy("name"),
+          limit(10) // Limit the number of search results
+        )
 
-      const usersSnapshot = await getDocs(usersQuery)
-      const usersData = usersSnapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .filter((userData) => userData.id !== user.uid)
+        const usersSnapshot = await getDocs(usersQuery)
+        const usersData = usersSnapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+          .filter((userData) => userData.id !== user.uid)
 
-      setSearchResults(usersData)
-    } catch (error) {
-      console.error("Error searching users:", error)
-    } finally {
-      setIsSearching(false)
-    }
-  }
+        setSearchResults(usersData)
+      } catch (error) {
+        console.error("Error searching users:", error)
+      } finally {
+        setIsSearching(false)
+      }
+    }, 300),
+    [searchQuery, user]
+  )
+
+  useEffect(() => {
+    handleSearch()
+  }, [searchQuery, handleSearch])
 
   const startConversation = (userId) => {
     router.push(`/messages/${userId}`)
